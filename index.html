@@ -107,8 +107,8 @@ dialog .x:focus-visible { outline: 2px solid #6b97ff; }
     <figure class="cover"><img src="img/cover.png" alt="Muse 生成的视频封面：毛茸茸的小机器人坐在电脑前，左侧大字 Muse 实测"></figure>
     <p class="cover-cap">封面由 Muse 生成（实测场景三），中英文标题都没有错字。</p>
     <div class="stats">
-      <div class="stat"><b>≈ 690</b><span>正文字数</span></div>
-      <div class="stat"><b>2:40–2:55</b><span>按每分钟 240–260 字</span></div>
+      <div class="stat"><b>≈ 740</b><span>正文字数</span></div>
+      <div class="stat"><b>2:50–3:05</b><span>按每分钟 240–260 字</span></div>
       <div class="stat"><b>5</b><span>实测场景</span></div>
       <div class="stat"><b>5</b><span>段落</span></div>
     </div>
@@ -139,10 +139,12 @@ dialog .x:focus-visible { outline: 2px solid #6b97ff; }
         </div>
       </div>
       <div class="scene">
-        <p class="read"><strong>第二个，写代码。</strong>我要一个番茄钟网页，要有开始、暂停、重置和圆形进度环。两分半钟后，它直接在 App 里给了能用的预览，点开始就能倒计时，还附了一个 HTML 文件。<span class="tag">≈ 2.5 分钟</span></p>
+        <p class="read"><strong>第二个，写代码。</strong>我要一个番茄钟网页，把设计方向写清楚：像日式厨房计时器那样安静、有质感，三种模式、按钮状态都要讲究。四分钟后，它直接在 App 里给了能用的预览：刻度表盘、大号数字，运行时只突出"暂停"。我又让它做了一个咖啡店官网，雾里的群山、陶杯、大号宋体，审美完全在线，连配图都是它自己生成的。<span class="tag">≈ 4 分钟</span></p>
         <div class="shots">
-          <figure><button type="button"><img src="img/s2a.png" alt="番茄钟预览" loading="lazy"></button><figcaption>22 · App 内直接预览</figcaption></figure>
-          <figure><button type="button"><img src="img/s2b.png" alt="番茄钟倒计时进行中" loading="lazy"></button><figcaption>23 · 点开始后正常倒计时</figcaption></figure>
+          <figure><button type="button"><img src="img/pomo2.png" alt="番茄钟：刻度表盘、大号数字，运行时只突出暂停" loading="lazy"></button><figcaption>43 · 番茄钟计时中，只突出"暂停"</figcaption></figure>
+          <figure><button type="button"><img src="img/web1.png" alt="山间咖啡官网首屏：雾中群山、陶杯和大号宋体标题" loading="lazy"></button><figcaption>38 · 咖啡店官网首屏</figcaption></figure>
+          <figure><button type="button"><img src="img/web2.png" alt="山间咖啡官网：手冲咖啡的门店照片" loading="lazy"></button><figcaption>39 · 官网门店照片，配图也是它生成的</figcaption></figure>
+          <figure><button type="button"><img src="img/web3.png" alt="山间咖啡官网：门店故事引言" loading="lazy"></button><figcaption>40 · 门店故事板块</figcaption></figure>
         </div>
       </div>
       <div class="scene">
@@ -170,20 +172,17 @@ dialog .x:focus-visible { outline: 2px solid #6b97ff; }
   </article>
 
   <article class="block">
-    <div class="rail"><span class="tc">2:10</span><span class="nm">不足</span></div>
+    <div class="rail"><span class="tc">2:20</span><span class="nm">不足</span></div>
     <div class="body">
-      <p class="read">短板也有。第一，模型的响应速度一般：每个任务都要等一到两分半钟。第二，审美要靠你提要求：随手一句话写的番茄钟比较普通；把设计方向、按钮状态这些要求写清楚之后，同样的番茄钟、还有咖啡店官网，都做得很有设计感。第三，它的连接器里暂时没有飞书、微信这类国内应用。</p>
-      <div class="shots">
-        <figure><button type="button"><img src="img/s2b.png" alt="第一版番茄钟：常见的深色卡片加圆环布局" loading="lazy"></button><figcaption>23 · 一句话提示：番茄钟比较普通</figcaption></figure>
-        <figure><button type="button"><img src="img/pomo2.png" alt="第二版番茄钟：暖白底、刻度表盘、运行时只突出暂停" loading="lazy"></button><figcaption>43 · 写清设计要求后：刻度表盘，运行时只突出"暂停"</figcaption></figure>
-        <figure><button type="button"><img src="img/web1.png" alt="山间咖啡官网首屏：雾中群山、陶杯和大号宋体标题" loading="lazy"></button><figcaption>38 · 咖啡店官网首屏</figcaption></figure>
-        <figure><button type="button"><img src="img/web2.png" alt="山间咖啡官网：手冲咖啡的门店照片" loading="lazy"></button><figcaption>39 · 官网里的门店照片，配图也是它生成的</figcaption></figure>
+      <p class="read">短板也有。第一，模型的响应速度一般：每个任务都要等一到四分钟。第二，不一定完全照做：我明确说不要深色卡片，它还是在页面中间放了一张深色卡片。第三，它的连接器里暂时没有飞书、微信这类国内应用。</p>
+      <div class="shots one">
+        <figure><button type="button"><img src="img/pomo-page.png" alt="番茄钟整页：暖白底色中间放了一张深色卡片" loading="lazy"></button><figcaption>42 · 要求"不要深色卡片"，它还是放了一张</figcaption></figure>
       </div>
     </div>
   </article>
 
   <article class="block">
-    <div class="rail"><span class="tc">2:40</span><span class="nm">结论</span></div>
+    <div class="rail"><span class="tc">2:45</span><span class="nm">结论</span></div>
     <div class="body">
       <p class="read">Muse 适合事情多、又不想在几个 App 之间来回切的人：查资料、写个小工具、做张图、出段视频，一句话就能拿到能用的结果。只想聊聊天的话，普通聊天 AI 就够了。</p>
       <p class="read">你最想让 Muse 帮你做什么？评论区告诉我，下期挑几个来实测。</p>
