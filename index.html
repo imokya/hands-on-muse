@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>img{max-width:100%}[hidden]{display:none!important}body{margin:0}</style>
+<title>Muse 上手实测</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a single reading column of lab-log entries; each scenario = prompt bubble → screenshot strip → findings → score */
+:root {
+  --bg: #f3f4f7;
+  --surface: #ffffff;
+  --fg: #16181d;
+  --muted: #5c6270;
+  --line: #dde0e7;
+  --accent: #2f66e0;
+  --accent-ink: #ffffff;
+  --chip: #e8edf9;
+  --warn: #a35a00;
+  --warn-bg: #fff4e2;
+  --shot-bg: #1b1c1f;
+  --f-display: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --f-body: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111215; --surface: #1a1c21; --fg: #eceef3; --muted: #9aa0ad; --line: #2b2e36;
+    --accent: #5b8cff; --accent-ink: #0b1020; --chip: #22293a; --warn: #f0b45c; --warn-bg: #2d2416; --shot-bg: #0b0b0d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111215; --surface: #1a1c21; --fg: #eceef3; --muted: #9aa0ad; --line: #2b2e36;
+  --accent: #5b8cff; --accent-ink: #0b1020; --chip: #22293a; --warn: #f0b45c; --warn-bg: #2d2416; --shot-bg: #0b0b0d;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 16px; line-height: 1.75; padding-inline: 20px; padding-block: 0 80px; }
+.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 72px; }
+.prose { max-width: 680px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.25; }
+p { margin: 0; }
+.mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+
+header { padding-block: 64px 0; display: grid; gap: 20px; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+h1 { font-size: clamp(32px, 6vw, 56px); font-weight: 900; letter-spacing: -.01em; }
+h1 em { font-style: normal; color: var(--accent); }
+.lede { color: var(--muted); font-size: 17px; max-width: 620px; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--muted); }
+.meta b { color: var(--fg); font-weight: 500; }
+
+.board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 14px; background: var(--surface); overflow: hidden; }
+.board a { color: inherit; text-decoration: none; padding: 20px 22px; display: grid; gap: 6px; border-left: 1px solid var(--line); }
+.board a:first-child { border-left: 0; }
+.board a:hover, .board a:focus-visible { background: var(--chip); outline: none; }
+.board .k { font-size: 13px; color: var(--muted); }
+.board .t { font-weight: 700; font-size: 17px; }
+.board .nums { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-top: 6px; }
+.board .score { font-family: var(--f-mono); font-size: 28px; font-weight: 600; }
+.board .score small { font-size: 14px; color: var(--muted); }
+.board .time { font-family: var(--f-mono); font-size: 13px; color: var(--muted); }
+.meter { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--accent); }
+
+section { display: grid; gap: 28px; scroll-margin-top: 24px; }
+.sec-head { display: grid; gap: 8px; }
+h2 { font-size: clamp(24px, 3.6vw, 32px); font-weight: 900; }
+.tag { font-family: var(--f-mono); font-size: 12px; color: var(--accent); letter-spacing: .08em; }
+
+.prompt { justify-self: end; max-width: 560px; background: var(--accent); color: var(--accent-ink); padding: 14px 18px; border-radius: 20px 20px 6px 20px; font-size: 15px; line-height: 1.65; }
+.prompt-label { justify-self: end; font-size: 12px; color: var(--muted); margin-bottom: -20px; }
+
+.shots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.shots.one { grid-template-columns: minmax(0, 1fr); }
+figure { margin: 0; display: grid; gap: 8px; min-width: 0; }
+figure button { all: unset; cursor: zoom-in; display: block; border-radius: 10px; overflow: hidden; background: var(--shot-bg); border: 1px solid var(--line); }
+figure button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+figure img { display: block; width: 100%; height: auto; }
+figcaption { font-size: 13px; color: var(--muted); display: flex; gap: 10px; align-items: baseline; }
+figcaption .mono { color: var(--fg); font-size: 12px; }
+.lowres { font-size: 11px; color: var(--warn); background: var(--warn-bg); padding: 1px 6px; border-radius: 4px; white-space: nowrap; }
+
+.status { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; }
+.status span.s { background: var(--chip); padding: 3px 10px; border-radius: 999px; }
+.status .arrow { color: var(--muted); }
+
+.findings { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 32px; align-items: start; }
+.findings ul { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; }
+.verdict { border-top: 3px solid var(--accent); padding-top: 14px; display: grid; gap: 8px; }
+.verdict .score { font-family: var(--f-mono); font-size: 40px; font-weight: 600; line-height: 1; }
+.verdict .score small { font-size: 16px; color: var(--muted); }
+.verdict p { font-size: 14px; color: var(--muted); }
+.check { background: var(--warn-bg); color: var(--warn); font-size: 13px; padding: 8px 12px; border-radius: 8px; }
+
+.summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; }
+.summary h3 { font-size: 18px; margin-bottom: 10px; }
+.summary ol { margin: 0; padding-left: 1.3em; display: grid; gap: 6px; }
+.picks { display: grid; gap: 10px; }
+.picks div { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 12px; font-size: 15px; padding-block: 10px; border-top: 1px solid var(--line); }
+.picks b { font-weight: 700; }
+.picks .mono { font-size: 13px; color: var(--muted); }
+
+footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 20px; }
+
+dialog { border: 0; padding: 0; background: transparent; max-width: 100vw; max-height: 100vh; width: 100vw; height: 100vh; }
+dialog::backdrop { background: rgba(0,0,0,.88); }
+dialog .lb { width: 100%; height: 100%; overflow: auto; display: grid; place-items: start center; padding: 48px 16px 24px; }
+dialog img { max-width: none; width: min(1920px, 100%); height: auto; cursor: zoom-out; }
+dialog img.full { width: 3840px; max-width: none; }
+dialog .bar { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; gap: 12px; padding: 10px 16px; color: #fff; font-size: 13px; background: rgba(0,0,0,.6); }
+dialog .bar button { background: #fff; color: #111; border: 0; border-radius: 6px; padding: 4px 12px; font: inherit; cursor: pointer; }
+dialog .bar button:focus-visible { outline: 2px solid #5b8cff; }
+
+@media (max-width: 720px) {
+  .board { grid-template-columns: minmax(0, 1fr); }
+  .board a { border-left: 0; border-top: 1px solid var(--line); }
+  .board a:first-child { border-top: 0; }
+  .shots { grid-template-columns: minmax(0, 1fr); }
+  .findings, .summary { grid-template-columns: minmax(0, 1fr); }
+  header { padding-block: 40px 0; }
+}
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Muse macOS App · 实测记录</div>
+    <h1>Muse 到底能做什么？<br><em>3 分钟</em>上手实测</h1>
+    <p class="lede">给 Muse 发了三条真实指令：信息整理、日程与邮件、周末旅行规划。下面是它每一步的反应、截图和打分，作为口播视频的素材。</p>
+    <div class="meta">
+      <span>实测时间 <b class="mono">2026-10-09 17:32</b></span>
+      <span>环境 <b>Muse 桌面 App · 中文界面</b></span>
+      <span>原则 <b>只测到起草和规划，不连接账号、不发送、不预订</b></span>
+    </div>
+  </header>
+
+  <nav class="board" aria-label="三个场景">
+    <a href="#s1">
+      <span class="k">场景 1</span><span class="t">信息整理</span>
+      <span class="nums"><span class="score">9<small>/10</small></span><span class="time">≈ 1 min</span></span>
+      <span class="meter"><i style="width:90%"></i></span>
+    </a>
+    <a href="#s2">
+      <span class="k">场景 2</span><span class="t">日程与邮件</span>
+      <span class="nums"><span class="score">7<small>/10</small></span><span class="time">&lt; 40 s</span></span>
+      <span class="meter"><i style="width:70%"></i></span>
+    </a>
+    <a href="#s3">
+      <span class="k">场景 3</span><span class="t">周末旅行规划</span>
+      <span class="nums"><span class="score">9<small>/10</small></span><span class="time">≈ 2 min</span></span>
+      <span class="meter"><i style="width:90%"></i></span>
+    </a>
+  </nav>
+
+  <section id="s0">
+    <div class="sec-head">
+      <span class="tag">先看界面</span>
+      <h2>聊天就是全部入口</h2>
+    </div>
+    <div class="shots one">
+      <figure><button type="button" data-full="img/00.png"><img src="img/00.png" alt="Muse 主界面：左侧功能栏，中间是聊天记录和头像生成结果" loading="lazy"></button>
+        <figcaption><span class="mono">00</span>主界面</figcaption></figure>
+    </div>
+    <ul class="prose">
+      <li>左侧一列功能图标：聊天、搜索、文档、灵感、任务、应用。</li>
+      <li>顶部是 Muse 的头像，它干活时头像下方会显示当前状态。</li>
+      <li>引导卡片里说它有"自己的电脑"，能填表、比价、购物、订座；需要登录时让你安全保存账号，购买前一定先问你。</li>
+      <li>之前随手测的"帮我生成一张头像"，直接给了 4 个 3D 风格的选项。</li>
+    </ul>
+  </section>
+
+  <section id="s1">
+    <div class="sec-head">
+      <span class="tag">场景 1 · 信息整理</span>
+      <h2>一句话，拿到一张耳机对比表</h2>
+    </div>
+    <span class="prompt-label">指令</span>
+    <p class="prompt">帮我对比 3 款热门降噪耳机（索尼 WH-1000XM6、Bose QC Ultra、AirPods Max），从价格、降噪、续航、重量四个维度做成表格，最后给一句购买建议。</p>
+    <div class="status" aria-label="状态变化"><span class="s">努力工作中</span><span class="arrow">→</span><span class="s">搜索参数</span><span class="arrow">→</span><span class="s">交付表格</span></div>
+    <div class="shots">
+      <figure><button type="button" data-full="img/01.png"><img src="img/01.png" alt="输入指令" loading="lazy"></button><figcaption><span class="mono">01</span>输入指令</figcaption></figure>
+      <figure><button type="button" data-full="img/04.png"><img src="img/04.png" alt="交付的对比表格和购买建议" loading="lazy"></button><figcaption><span class="mono">04</span>交付的表格和购买建议</figcaption></figure>
+      <figure><button type="button" data-full="img/02.jpg"><img src="img/02.jpg" alt="头像下显示努力工作中" loading="lazy"></button><figcaption><span class="mono">02</span>努力工作中<span class="lowres">执行中画面 · 低清</span></figcaption></figure>
+      <figure><button type="button" data-full="img/03.jpg"><img src="img/03.jpg" alt="头像下显示搜索参数" loading="lazy"></button><figcaption><span class="mono">03</span>搜索参数<span class="lowres">执行中画面 · 低清</span></figcaption></figure>
+    </div>
+    <div class="findings">
+      <ul>
+        <li>约 1 分钟交付四个维度的对比表，结尾一句建议：索尼最均衡，重度苹果用户且不差钱再考虑 AirPods Max。</li>
+        <li>价格用的是美国官网定价（索尼 $459.99 / Bose $449 / AirPods Max $549），它主动注明"国行会有浮动"。</li>
+        <li>头像下的状态会实时变化，适合做过程画面。</li>
+      </ul>
+      <div class="verdict">
+        <span class="score">9<small>/10</small></span>
+        <p>速度快，格式就是要的样子。</p>
+        <span class="check">参数是它自己查的，写进视频前核对一遍</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="s2">
+    <div class="sec-head">
+      <span class="tag">场景 2 · 日程与邮件</span>
+      <h2>没连日历，它先把邮件写好了</h2>
+    </div>
+    <span class="prompt-label">指令</span>
+    <p class="prompt">帮我看看下周的日历，找个周三下午的空档约一个 30 分钟的选题会，再起草一封邀请邮件。只起草，先不要发送，也不要创建日程。</p>
+    <div class="shots">
+      <figure><button type="button" data-full="img/05.png"><img src="img/05.png" alt="输入指令" loading="lazy"></button><figcaption><span class="mono">05</span>输入指令</figcaption></figure>
+      <figure><button type="button" data-full="img/06.png"><img src="img/06.png" alt="Google 日历连接卡片和邮件草稿" loading="lazy"></button><figcaption><span class="mono">06</span>弹出连接卡片 + 邮件草稿</figcaption></figure>
+    </div>
+    <div class="findings">
+      <ul>
+        <li>不到 40 秒回复。发现没连 Google 日历，就在对话里弹出"Google 日历 · 连接器 · 连接"卡片。</li>
+        <li>没有卡住：主题、正文、议程都写好了，时间留成占位符 <span class="mono">[下午XX:XX - XX:XX]</span>，连上日历再填。</li>
+        <li>自己算出"下周三 = 10 月 14 日"，日期正确。</li>
+        <li>这次没有点"连接"，读取日历这一步没测到。</li>
+      </ul>
+      <div class="verdict">
+        <span class="score">7<small>/10</small></span>
+        <p>缺权限时不报错，先做完能做的部分，再告诉你怎么补。分数受限于没连账号。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="s3">
+    <div class="sec-head">
+      <span class="tag">场景 3 · 多步骤规划</span>
+      <h2>从上海出发，它推荐了杭州</h2>
+    </div>
+    <span class="prompt-label">指令</span>
+    <p class="prompt">帮我规划一个从上海出发的周末两天一夜短途旅行，目的地你来推荐，给出每天行程、交通方式和人均预算明细。只做规划，不要预订任何东西。</p>
+    <div class="status" aria-label="状态变化"><span class="s">准备推荐</span><span class="arrow">→</span><span class="s">交付行程与预算</span></div>
+    <div class="shots">
+      <figure><button type="button" data-full="img/07.png"><img src="img/07.png" alt="输入指令" loading="lazy"></button><figcaption><span class="mono">07</span>输入指令</figcaption></figure>
+      <figure><button type="button" data-full="img/08.jpg"><img src="img/08.jpg" alt="头像下显示准备推荐" loading="lazy"></button><figcaption><span class="mono">08</span>准备推荐<span class="lowres">执行中画面 · 低清</span></figcaption></figure>
+      <figure><button type="button" data-full="img/09.png"><img src="img/09.png" alt="杭州两天行程概览" loading="lazy"></button><figcaption><span class="mono">09</span>行程概览</figcaption></figure>
+      <figure><button type="button" data-full="img/10.png"><img src="img/10.png" alt="交通方式和人均预算表" loading="lazy"></button><figcaption><span class="mono">10</span>交通与人均预算</figcaption></figure>
+    </div>
+    <div class="findings">
+      <ul>
+        <li>约 2 分钟。理由：高铁 1 小时直达、景点集中。</li>
+        <li>Day 1 西湖环线，Day 2 灵隐 → 回上海，按上午 / 中午 / 下午 / 晚上排好。</li>
+        <li>预算合计：不看演出约 <span class="mono">730–830</span> 元，含《印象西湖》约 <span class="mono">1130–1430</span> 元。</li>
+        <li>主动提醒灵隐飞来峰要提前 1 天实名预约、《印象西湖》有季节性停演，并注明"只做了规划，没做任何预订"。</li>
+      </ul>
+      <div class="verdict">
+        <span class="score">9<small>/10</small></span>
+        <p>信息密度高，还会提前提醒容易踩的坑。</p>
+        <span class="check">预约政策和票价出发前再核实</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="sum">
+    <div class="sec-head">
+      <span class="tag">小结</span>
+      <h2>可以直接用在文案第五、六部分</h2>
+    </div>
+    <div class="summary">
+      <div>
+        <h3>优点</h3>
+        <ol>
+          <li>快：三个任务都在 2 分钟内完成。</li>
+          <li>过程看得见：头像下实时显示状态。</li>
+          <li>交付规整：表格、草稿、行程表拿来就能用。</li>
+          <li>有分寸：缺权限会引导连接，预订和发送前会停下。</li>
+        </ol>
+      </div>
+      <div>
+        <h3>不足 / 待验证</h3>
+        <ol>
+          <li>日历、邮件必须先连 Google 账号，这次没测。</li>
+          <li>价格、政策类信息需要人工核对。</li>
+          <li>操作网页、后台长任务还没测，可以留给下一期。</li>
+        </ol>
+      </div>
+    </div>
+    <div class="picks">
+      <h3>适合放进视频的截图</h3>
+      <div><b>开头钩子</b><span>结果最直观 <span class="mono">· 04 · 10</span></span></div>
+      <div><b>过程展示</b><span>状态变化 <span class="mono">· 02 · 03 · 08</span></span></div>
+      <div><b>安全感</b><span>先引导连接，不擅自操作 <span class="mono">· 06</span></span></div>
+    </div>
+  </section>
+
+  <footer>点任意截图可放大查看，再点"原始尺寸"看 3840×2100 原图。标"低清"的三张是执行中的瞬间画面，没法重新截取。</footer>
+</div>
+
+<dialog id="lb" aria-label="截图大图">
+  <div class="bar"><span id="lbcap"></span><span><button type="button" id="lbsize">原始尺寸</button> <button type="button" id="lbclose">关闭</button></span></div>
+  <div class="lb"><img id="lbimg" alt=""></div>
+</dialog>
+
+<script>
+(function () {
+  var dlg = document.getElementById('lb');
+  var img = document.getElementById('lbimg');
+  var cap = document.getElementById('lbcap');
+  var size = document.getElementById('lbsize');
+  document.querySelectorAll('figure button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var fig = b.closest('figure');
+      img.src = b.dataset.full;
+      img.alt = b.querySelector('img').alt;
+      img.classList.remove('full');
+      size.textContent = '原始尺寸';
+      cap.textContent = fig.querySelector('figcaption').textContent;
+      if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+    });
+  });
+  function close() { if (dlg.close) dlg.close(); else dlg.removeAttribute('open'); }
+  document.getElementById('lbclose').addEventListener('click', close);
+  img.addEventListener('click', close);
+  size.addEventListener('click', function () {
+    var on = img.classList.toggle('full');
+    size.textContent = on ? '适应窗口' : '原始尺寸';
+  });
+})();
+</script>
+</body>
+</html>
